@@ -57,6 +57,7 @@ func (m Dialog) View() string {
 }
 
 func (m Dialog) Init() tea.Cmd {
+	m.prompts[0].setIsActive(true)
 	return nil
 }
 
@@ -70,13 +71,18 @@ func InitDialogue() Dialog {
 // nav
 func (d *Dialog) nextPrompt() {
 	if !(d.activePrompt == len(d.prompts)-1) {
+		d.prompts[d.activePrompt].setIsActive(false)
 		d.activePrompt += 1
+		d.prompts[d.activePrompt].setIsActive(true)
 	}
+
 }
 
 func (d *Dialog) prevPrompt() {
 	if !(d.activePrompt == 0) {
+		d.prompts[d.activePrompt].setIsActive(false)
 		d.activePrompt -= 1
+		d.prompts[d.activePrompt].setIsActive(true)
 	}
 }
 

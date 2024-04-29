@@ -44,7 +44,7 @@ func (m Prompt) View() string {
 
 	res.WriteString(m.message + "\n")
 	for i, option := range m.options {
-		if i == m.cursorIndex {
+		if m.isActive && i == m.cursorIndex {
 			str := fmt.Sprintf("%s %s\t", checkBox, option)
 			res.WriteString(selectedPromptOptionStyle.Render(str))
 		} else {
@@ -59,6 +59,12 @@ func (m Prompt) View() string {
 
 func (m Prompt) Init() tea.Cmd {
 	return nil
+}
+
+//util
+
+func (p *Prompt) setIsActive(state bool) {
+	p.isActive = state
 }
 
 func MakePrompt(message string, options []string) Prompt {
