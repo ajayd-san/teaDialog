@@ -4,19 +4,37 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 type Prompt struct {
-	message  string
-	options  []string
-	selected int
-	cursor   int
+	message        string
+	options        []string
+	selectedOption int
+	cursorIndex    int
 }
 
 func (m Prompt) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	// switch msg := msg.(type) {
-	// }
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, promptKeymap.Prev):
+			if m.cursorIndex == 0 {
+				m.cursorIndex = len(m.options) - 1
+			} else {
+				m.cursorIndex -= 1
+			}
+
+		case key.Matches(msg, promptKeymap.Next):
+			if m.cursorIndex == len(m.options)-1 {
+				m.cursorIndex = 0
+			} else {
+				m.cursorIndex += 1
+			}
+		}
+
+	}
 	return m, nil
 }
 
@@ -24,8 +42,13 @@ func (m Prompt) View() string {
 	var res strings.Builder
 
 	res.WriteString(m.message + "\n")
-	for _, option := range m.options {
-		res.WriteString(fmt.Sprintf("%s %s\t", checkBox, option))
+	for i, option := range m.options {
+		if i == m.cursorIndex {
+			str := fmt.Sprintf("%s %s\t", checkBox, option)
+			res.WriteString(selectedPromptOptionStyle.Render(str))
+		} else {
+			res.WriteString(fmt.Sprintf("%s %s\t", checkBox, option))
+		}
 	}
 
 	return promptStyle.Render(res.String())
