@@ -27,7 +27,7 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, NavKeymap.Next):
 			m.nextPrompt()
-		case key.Matches(msg, NavKeymap.Back):
+		case key.Matches(msg, NavKeymap.Prev):
 			m.prevPrompt()
 		}
 	}
