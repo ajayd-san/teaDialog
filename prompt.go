@@ -13,6 +13,7 @@ type Prompt struct {
 	options        []string
 	selectedOption int
 	cursorIndex    int
+	isActive       bool
 }
 
 func (m Prompt) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

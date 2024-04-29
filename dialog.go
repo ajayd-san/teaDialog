@@ -44,8 +44,12 @@ func (m Dialog) View() string {
 
 	res.WriteString(m.title + "\n\n")
 
-	for _, prompt := range m.prompts {
-		res.WriteString(prompt.View())
+	for i, prompt := range m.prompts {
+		promptStr := prompt.View()
+		if i == m.activePrompt {
+			promptStr = selectedPromptStyle.Render(promptStr)
+		}
+		res.WriteString(promptStr)
 		res.WriteString("\n")
 	}
 
