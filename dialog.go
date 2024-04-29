@@ -46,6 +46,7 @@ func (m Dialog) View() string {
 
 	for _, prompt := range m.prompts {
 		res.WriteString(prompt.View())
+		res.WriteString("\n")
 	}
 
 	return containerStyle.Render(dialogStyle.Render(res.String()))
@@ -56,7 +57,10 @@ func (m Dialog) Init() tea.Cmd {
 }
 
 func InitDialogue() Dialog {
-	return Dialog{title: "test", prompts: []Prompt{MakePrompt("are your sure man, this is a hard choice?", []string{"yes", "no"})}}
+	return Dialog{title: "test", prompts: []Prompt{
+		MakePrompt("are your sure man, this is a hard choice?", []string{"yes", "no"}),
+		MakePrompt("are your sure man, this is a most defo hard choice?", []string{"yasss", "naah"}),
+	}}
 }
 
 // nav

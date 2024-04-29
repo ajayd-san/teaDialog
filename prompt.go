@@ -51,6 +51,8 @@ func (m Prompt) View() string {
 		}
 	}
 
+	res.WriteString("\n\n")
+
 	return promptStyle.Render(res.String())
 }
 
