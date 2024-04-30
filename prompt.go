@@ -33,6 +33,8 @@ func (m Prompt) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				m.cursorIndex += 1
 			}
+		case key.Matches(msg, promptKeymap.Enter):
+			m.selectedOption = m.cursorIndex
 		}
 
 	}
@@ -44,11 +46,18 @@ func (m Prompt) View() string {
 
 	res.WriteString(m.message + "\n")
 	for i, option := range m.options {
+		var checkbox string
+		checkbox = checkBox
+
+		if i == m.selectedOption {
+			checkbox = checkMark
+		}
+
 		if m.isActive && i == m.cursorIndex {
-			str := fmt.Sprintf("%s %s\t", checkBox, option)
+			str := fmt.Sprintf("%s %s\t", checkbox, option)
 			res.WriteString(selectedPromptOptionStyle.Render(str))
 		} else {
-			res.WriteString(fmt.Sprintf("%s %s\t", checkBox, option))
+			res.WriteString(fmt.Sprintf("%s %s\t", checkbox, option))
 		}
 	}
 
@@ -69,7 +78,8 @@ func (p *Prompt) setIsActive(state bool) {
 
 func MakePrompt(message string, options []string) Prompt {
 	return Prompt{
-		message: message,
-		options: options,
+		message:        message,
+		options:        options,
+		selectedOption: -1,
 	}
 }
