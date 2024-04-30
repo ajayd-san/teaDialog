@@ -4,7 +4,6 @@ import "github.com/charmbracelet/bubbles/key"
 
 type navigationKeymap struct {
 	Enter key.Binding
-	Back  key.Binding
 	Quit  key.Binding
 	Next  key.Binding
 	Prev  key.Binding
@@ -35,10 +34,6 @@ var NavKeymap = navigationKeymap{
 	Enter: key.NewBinding(
 		key.WithKeys("enter"),
 		key.WithHelp("enter", "select"),
-	),
-	Back: key.NewBinding(
-		key.WithKeys("esc"),
-		key.WithHelp("esc", "back"),
 	),
 	Quit: key.NewBinding(
 		key.WithKeys("ctrl+c", "q"),
