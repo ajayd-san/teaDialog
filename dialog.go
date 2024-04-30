@@ -27,8 +27,10 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case key.Matches(msg, NavKeymap.Next):
 			m.nextPrompt()
+			return m, nil
 		case key.Matches(msg, NavKeymap.Prev):
 			m.prevPrompt()
+			return m, nil
 		}
 	}
 
