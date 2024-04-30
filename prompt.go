@@ -33,7 +33,7 @@ func (m Prompt) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				m.cursorIndex += 1
 			}
-		case key.Matches(msg, promptKeymap.Enter):
+		case key.Matches(msg, promptKeymap.Select):
 			m.selectedOption = m.cursorIndex
 		}
 

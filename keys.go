@@ -10,15 +10,15 @@ type navigationKeymap struct {
 }
 
 type promptNavKeymap struct {
-	Enter key.Binding
-	Next  key.Binding
-	Prev  key.Binding
+	Select key.Binding
+	Next   key.Binding
+	Prev   key.Binding
 }
 
 var promptKeymap = promptNavKeymap{
-	Enter: key.NewBinding(
-		key.WithKeys("enter"),
-		key.WithHelp("enter", "select"),
+	Select: key.NewBinding(
+		key.WithKeys(" "),
+		key.WithHelp("space", "select"),
 	),
 	Next: key.NewBinding(
 		key.WithKeys("right", "l"),
