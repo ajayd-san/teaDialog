@@ -41,6 +41,7 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Dialog) View() string {
 
 	var res strings.Builder
+	var promptStrs strings.Builder
 
 	res.WriteString(m.title + "\n\n")
 
@@ -49,15 +50,31 @@ func (m Dialog) View() string {
 		if i == m.activePrompt {
 			promptStr = selectedPromptStyle.Render(promptStr)
 		}
-		res.WriteString(promptStr)
-		res.WriteString("\n")
+		promptStrs.WriteString(promptStr)
+		promptStrs.WriteString("\n")
 	}
+
+	promptStrsFinal := promptContainerStyle.Render(promptStrs.String())
+	res.WriteString(promptStrsFinal)
 
 	return containerStyle.Render(dialogStyle.Render(res.String()))
 }
 
 func (m Dialog) Init() tea.Cmd {
+	//set first prompt as active, to display the selection highlight
 	m.prompts[0].setIsActive(true)
+
+	//INFO: weird formatting issue with this code
+	// maxBorderWidth := 0
+
+	// for _, prompt := range m.prompts {
+	// 	maxBorderWidth = max(maxBorderWidth, lipgloss.Width(prompt.View()))
+	// }
+
+	// log.Println(maxBorderWidth)
+
+	// selectedPromptOptionStyle = selectedPromptOptionStyle.Width(maxBorderWidth)
+
 	return nil
 }
 
