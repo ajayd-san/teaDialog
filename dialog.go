@@ -1,6 +1,7 @@
 package teadialog
 
 import (
+	"log"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -15,6 +16,7 @@ type Dialog struct {
 
 // Update implements tea.Model.
 func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	log.Println("INTERNAL: ", msg)
 	switch msg := msg.(type) {
 
 	case tea.WindowSizeMsg:
@@ -22,8 +24,8 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch {
-		// case key.Matches(msg, NavKeymap.Quit):
-		// 	return m, tea.Quit
+		case key.Matches(msg, NavKeymap.Quit):
+			return m, tea.Quit
 
 		case key.Matches(msg, NavKeymap.Next):
 			m.nextPrompt()
