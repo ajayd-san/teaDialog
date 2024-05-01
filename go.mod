@@ -1,4 +1,4 @@
-module github.com/ajayds/teaDialog
+module github.com/ajayd-san/teaDialog
 
 go 1.22.2
 
