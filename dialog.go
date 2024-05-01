@@ -1,4 +1,4 @@
-package main
+package teadialog
 
 import (
 	"strings"
@@ -22,8 +22,8 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, NavKeymap.Quit):
-			return m, tea.Quit
+		// case key.Matches(msg, NavKeymap.Quit):
+		// 	return m, tea.Quit
 
 		case key.Matches(msg, NavKeymap.Next):
 			m.nextPrompt()
@@ -32,7 +32,7 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.prevPrompt()
 			return m, nil
 		case key.Matches(msg, NavKeymap.Enter):
-			return m, nil
+			return m, m.getUserChoices
 		}
 	}
 
@@ -82,11 +82,16 @@ func (m Dialog) Init() tea.Cmd {
 	return nil
 }
 
-func InitDialogue() Dialog {
-	return Dialog{title: "test", prompts: []Prompt{
-		MakePrompt("are your sure man, this is a hard choice?", []string{"yes", "no"}),
-		MakePrompt("are your sure man, this is a most defo hard choice?", []string{"yasss", "naah"}),
-	}}
+func InitDialogue(title string, prompts []Prompt) Dialog {
+	return Dialog{
+		title:        title,
+		prompts:      prompts,
+		activePrompt: 0,
+	}
+}
+
+func (d *Dialog) getUserChoices() tea.Msg {
+	return d
 }
 
 // nav
