@@ -1,7 +1,6 @@
 package teadialog
 
 import (
-	"log"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -16,12 +15,11 @@ type Dialog struct {
 	prompts      []Prompt
 	activePrompt int
 	Kind         DialogType
-	Storage      *map[string]string
+	storage      *map[string]string
 }
 
 // Update implements tea.Model.
 func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	log.Println("INTERNAL: ", msg)
 	switch msg := msg.(type) {
 
 	case tea.WindowSizeMsg:
@@ -89,13 +87,22 @@ func (m Dialog) Init() tea.Cmd {
 	return nil
 }
 
-func InitDialogue(title string, prompts []Prompt, dialogKind DialogType) Dialog {
+func InitDialogue(title string, prompts []Prompt, dialogKind DialogType, storage *map[string]string) Dialog {
 	return Dialog{
 		title:        title,
 		prompts:      prompts,
 		activePrompt: 0,
 		Kind:         dialogKind,
+		storage:      storage,
 	}
+}
+
+func (d Dialog) GetStorage() *map[string]string {
+	return d.storage
+}
+
+func (d *Dialog) SetStorage(storage *map[string]string) {
+	d.storage = storage
 }
 
 func (d *Dialog) getUserChoices() tea.Msg {
