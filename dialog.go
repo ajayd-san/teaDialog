@@ -15,7 +15,7 @@ type Dialog struct {
 	prompts      []Prompt
 	activePrompt int
 	Kind         DialogType
-	storage      *map[string]string
+	storage      map[string]string
 }
 
 // Update implements tea.Model.
@@ -87,7 +87,7 @@ func (m Dialog) Init() tea.Cmd {
 	return nil
 }
 
-func InitDialogue(title string, prompts []Prompt, dialogKind DialogType, storage *map[string]string) Dialog {
+func InitDialogue(title string, prompts []Prompt, dialogKind DialogType, storage map[string]string) Dialog {
 	return Dialog{
 		title:        title,
 		prompts:      prompts,
@@ -97,11 +97,11 @@ func InitDialogue(title string, prompts []Prompt, dialogKind DialogType, storage
 	}
 }
 
-func (d Dialog) GetStorage() *map[string]string {
+func (d Dialog) GetStorage() map[string]string {
 	return d.storage
 }
 
-func (d *Dialog) SetStorage(storage *map[string]string) {
+func (d *Dialog) SetStorage(storage map[string]string) {
 	d.storage = storage
 }
 
