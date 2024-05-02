@@ -16,6 +16,7 @@ type Dialog struct {
 	prompts      []Prompt
 	activePrompt int
 	Kind         DialogType
+	Storage      *map[string]string
 }
 
 // Update implements tea.Model.
