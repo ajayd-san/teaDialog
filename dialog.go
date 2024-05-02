@@ -15,7 +15,7 @@ type Dialog struct {
 	title        string
 	prompts      []Prompt
 	activePrompt int
-	dialogType   DialogType
+	Kind         DialogType
 }
 
 // Update implements tea.Model.
@@ -88,12 +88,12 @@ func (m Dialog) Init() tea.Cmd {
 	return nil
 }
 
-func InitDialogue(title string, prompts []Prompt, dialogType DialogType) Dialog {
+func InitDialogue(title string, prompts []Prompt, dialogKind DialogType) Dialog {
 	return Dialog{
 		title:        title,
 		prompts:      prompts,
 		activePrompt: 0,
-		dialogType:   dialogType,
+		Kind:         dialogKind,
 	}
 }
 
