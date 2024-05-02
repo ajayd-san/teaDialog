@@ -8,10 +8,14 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+// type of dialog, can be used to distinguish between different dialogs in main update loop
+type DialogType int
+
 type Dialog struct {
 	title        string
 	prompts      []Prompt
 	activePrompt int
+	dialogType   DialogType
 }
 
 // Update implements tea.Model.
@@ -84,11 +88,12 @@ func (m Dialog) Init() tea.Cmd {
 	return nil
 }
 
-func InitDialogue(title string, prompts []Prompt) Dialog {
+func InitDialogue(title string, prompts []Prompt, dialogType DialogType) Dialog {
 	return Dialog{
 		title:        title,
 		prompts:      prompts,
 		activePrompt: 0,
+		dialogType:   dialogType,
 	}
 }
 
