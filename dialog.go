@@ -77,21 +77,6 @@ func (m Dialog) Init() tea.Cmd {
 	return func() tea.Msg {
 		return PromptInit(0)
 	}
-	//set first prompt as active, to display the selection highlight
-	m.prompts[0].setIsActive(true)
-
-	//INFO: weird formatting issue with this code
-	// maxBorderWidth := 0
-
-	// for _, prompt := range m.prompts {
-	// 	maxBorderWidth = max(maxBorderWidth, lipgloss.Width(prompt.View()))
-	// }
-
-	// log.Println(maxBorderWidth)
-
-	// selectedPromptOptionStyle = selectedPromptOptionStyle.Width(maxBorderWidth)
-
-	return nil
 }
 
 func InitDialogue(title string, prompts []Prompt, dialogKind DialogType, storage map[string]string) Dialog {
