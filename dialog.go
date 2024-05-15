@@ -22,6 +22,9 @@ type Dialog struct {
 func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
+	case PromptInit:
+		//set the first prompt to active
+		m.prompts[0] = m.prompts[0].setIsActive(true)
 	case tea.WindowSizeMsg:
 		containerStyle = containerStyle.Width(msg.Width).Height(msg.Height)
 
@@ -42,7 +45,8 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	updatedPrompt, _ := m.getActivePrompt().Update(msg)
-	m.prompts[m.activePrompt] = updatedPrompt.(Prompt)
+	temp := updatedPrompt.(Prompt)
+	m.prompts[m.activePrompt] = temp
 
 	return m, nil
 }
@@ -70,6 +74,9 @@ func (m Dialog) View() string {
 }
 
 func (m Dialog) Init() tea.Cmd {
+	return func() tea.Msg {
+		return PromptInit(0)
+	}
 	//set first prompt as active, to display the selection highlight
 	m.prompts[0].setIsActive(true)
 
@@ -112,23 +119,23 @@ func (d *Dialog) getUserChoices() tea.Msg {
 // nav
 func (d *Dialog) nextPrompt() {
 	if !(d.activePrompt == len(d.prompts)-1) {
-		d.prompts[d.activePrompt].setIsActive(false)
+		d.prompts[d.activePrompt] = d.prompts[d.activePrompt].setIsActive(false)
 		d.activePrompt += 1
-		d.prompts[d.activePrompt].setIsActive(true)
+		d.prompts[d.activePrompt] = d.prompts[d.activePrompt].setIsActive(true)
 	}
 
 }
 
 func (d *Dialog) prevPrompt() {
 	if !(d.activePrompt == 0) {
-		d.prompts[d.activePrompt].setIsActive(false)
+		d.prompts[d.activePrompt] = d.prompts[d.activePrompt].setIsActive(false)
 		d.activePrompt -= 1
-		d.prompts[d.activePrompt].setIsActive(true)
+		d.prompts[d.activePrompt] = d.prompts[d.activePrompt].setIsActive(true)
 	}
 }
 
 //util
 
-func (d Dialog) getActivePrompt() *Prompt {
-	return &d.prompts[d.activePrompt]
+func (d Dialog) getActivePrompt() Prompt {
+	return d.prompts[d.activePrompt]
 }
