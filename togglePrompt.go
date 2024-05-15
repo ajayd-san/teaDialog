@@ -37,8 +37,9 @@ func (m TogglePrompt) View() string {
 
 	str := fmt.Sprintf("%s %s", checkbox, m.message)
 	if m.isActive {
-		res.WriteString(selectedPromptOptionStyle.Render(str))
+		str = selectedPromptOptionStyle.Render(str)
 	}
+	res.WriteString(str)
 	res.WriteString("\n\n")
 
 	return promptStyle.Render(res.String())
@@ -50,8 +51,9 @@ func (m TogglePrompt) Init() tea.Cmd {
 
 //util
 
-func (p *TogglePrompt) setIsActive(state bool) {
+func (p TogglePrompt) setIsActive(state bool) Prompt {
 	p.isActive = state
+	return p
 }
 
 func MakeTogglePrompt(message string) TogglePrompt {
