@@ -87,6 +87,7 @@ func (m Dialog) View() string {
 }
 
 func (m Dialog) Init() tea.Cmd {
+	//INFO: fire init prompt command to initialize the prompt, duh
 	return func() tea.Msg {
 		return PromptInit(0)
 	}
