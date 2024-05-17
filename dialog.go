@@ -5,6 +5,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 // type of dialog, can be used to distinguish between different dialogs in main update loop
@@ -25,6 +26,18 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case PromptInit:
 		//set the first prompt to active
 		m.prompts[0] = m.prompts[0].setIsActive(true)
+
+		/*
+			find the maxwidth of each prompt rendered independently, this is ensures the dialog width is constant when left border
+			is applied when a active prompt is displayed
+		*/
+		maxWidth := 0
+		for _, prompt := range m.prompts {
+			maxWidth = max(lipgloss.Width(dialogStyle.Render(selectedPromptStyle.Render(prompt.View()))), maxWidth)
+		}
+
+		dialogStyle = dialogStyle.Width(maxWidth)
+
 	case tea.WindowSizeMsg:
 		containerStyle = containerStyle.Width(msg.Width).Height(msg.Height)
 
