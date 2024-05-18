@@ -84,6 +84,9 @@ func (m OptionPrompt) GetId() string {
 
 // GetSelection implements Prompt.
 func (m OptionPrompt) GetSelection() any {
+	if m.selectedOption == -1 {
+		return nil
+	}
 	return m.options[m.selectedOption]
 }
 
