@@ -19,6 +19,12 @@ type Dialog struct {
 	storage      map[string]string
 }
 
+type DialogSelectionResult struct {
+	Kind        DialogType
+	userChoices map[string]any
+	userStorage map[string]string
+}
+
 // Update implements tea.Model.
 func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
@@ -120,12 +126,11 @@ func (d *Dialog) getUserChoices() tea.Cmd {
 			data[id] = selection
 		}
 
-		// add storage to data as well
-		for k, v := range d.storage {
-			data[k] = v
+		return DialogSelectionResult{
+			Kind:        d.Kind,
+			userChoices: data,
+			userStorage: d.storage,
 		}
-
-		return data
 	}
 }
 
