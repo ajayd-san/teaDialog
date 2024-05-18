@@ -21,8 +21,8 @@ type Dialog struct {
 
 type DialogSelectionResult struct {
 	Kind        DialogType
-	userChoices map[string]any
-	userStorage map[string]string
+	UserChoices map[string]any
+	UserStorage map[string]string
 }
 
 // Update implements tea.Model.
