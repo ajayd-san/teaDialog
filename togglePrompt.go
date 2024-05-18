@@ -9,7 +9,7 @@ import (
 )
 
 type TogglePrompt struct {
-	message  string
+	label    string
 	selected bool
 	isActive bool
 }
@@ -35,7 +35,7 @@ func (m TogglePrompt) View() string {
 		checkbox = checkMark
 	}
 
-	str := fmt.Sprintf("%s %s", checkbox, m.message)
+	str := fmt.Sprintf("%s %s", checkbox, m.label)
 	if m.isActive {
 		str = selectedPromptOptionStyle.Render(str)
 	}
@@ -58,6 +58,6 @@ func (p TogglePrompt) setIsActive(state bool) Prompt {
 
 func MakeTogglePrompt(message string) TogglePrompt {
 	return TogglePrompt{
-		message: message,
+		label: message,
 	}
 }

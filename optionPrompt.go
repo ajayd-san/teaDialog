@@ -9,7 +9,7 @@ import (
 )
 
 type OptionPrompt struct {
-	message        string
+	label          string
 	options        []string
 	selectedOption int
 	cursorIndex    int
@@ -44,7 +44,7 @@ func (m OptionPrompt) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m OptionPrompt) View() string {
 	var res strings.Builder
 
-	res.WriteString(m.message + "\n")
+	res.WriteString(m.label + "\n")
 	for i, option := range m.options {
 		var checkbox string
 		checkbox = checkBox
@@ -83,7 +83,7 @@ func (p OptionPrompt) setIsActive(state bool) Prompt {
 
 func MakeOptionPrompt(message string, options []string) Prompt {
 	return &OptionPrompt{
-		message:        message,
+		label:          message,
 		options:        options,
 		selectedOption: -1,
 	}
