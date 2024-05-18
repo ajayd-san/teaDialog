@@ -1,6 +1,8 @@
 package teadialog
 
 import (
+	"encoding/json"
+	"log"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -53,7 +55,7 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.prevPrompt()
 			return m, nil
 		case key.Matches(msg, NavKeymap.Enter):
-			return m, m.getUserChoices
+			return m, m.getUserChoices()
 		}
 	}
 
@@ -111,8 +113,24 @@ func (d *Dialog) SetStorage(storage map[string]string) {
 	d.storage = storage
 }
 
-func (d *Dialog) getUserChoices() tea.Msg {
-	return d
+func (d *Dialog) getUserChoices() tea.Cmd {
+	return func() tea.Msg {
+		userChoices := make(map[string]any, len(d.prompts))
+		log.Println("------------------")
+		for _, prompt := range d.prompts {
+			id := prompt.GetId()
+			selection := prompt.GetSelection()
+			userChoices[id] = selection
+		}
+
+		jsonStr, err := json.Marshal(userChoices)
+
+		if err != nil {
+			panic("error encoding responses to json")
+		}
+
+		return jsonStr
+	}
 }
 
 // nav

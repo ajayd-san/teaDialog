@@ -90,6 +90,7 @@ func (m OptionPrompt) GetSelection() any {
 // util
 func MakeOptionPrompt(id string, label string, options []string) Prompt {
 	return &OptionPrompt{
+		id:             id,
 		label:          label,
 		options:        options,
 		selectedOption: -1,

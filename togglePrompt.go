@@ -68,6 +68,7 @@ func (m TogglePrompt) GetSelection() any {
 // util
 func MakeTogglePrompt(id string, message string) TogglePrompt {
 	return TogglePrompt{
+		id:    id,
 		label: message,
 	}
 }
