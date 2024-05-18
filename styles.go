@@ -9,6 +9,13 @@ var (
 	promptStyle               = lipgloss.NewStyle().MarginLeft(1)
 	selectedPromptStyle       = lipgloss.NewStyle().Border(lipgloss.NormalBorder(), false, false, false, true).Padding(0, 0, 0, 1)
 	selectedPromptOptionStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("98"))
+
+	errorDialogStyle = lipgloss.NewStyle().
+				Border(lipgloss.NormalBorder()).
+				BorderForeground(lipgloss.Color("#FF0000")).
+				Foreground(lipgloss.Color("#FF0000")).
+				Align(lipgloss.Center).
+				Padding(2, 8)
 )
 
 const checkMark = "✔"
