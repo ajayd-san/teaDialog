@@ -128,8 +128,8 @@ func (d *Dialog) getUserChoices() tea.Cmd {
 
 		return DialogSelectionResult{
 			Kind:        d.Kind,
-			userChoices: data,
-			userStorage: d.storage,
+			UserChoices: data,
+			UserStorage: d.storage,
 		}
 	}
 }
