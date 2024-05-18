@@ -9,4 +9,6 @@ type PromptInit int
 type Prompt interface {
 	tea.Model
 	setIsActive(bool) Prompt
+	GetId() string
+	GetSelection() any
 }

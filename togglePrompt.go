@@ -9,6 +9,7 @@ import (
 )
 
 type TogglePrompt struct {
+	id       string
 	label    string
 	selected bool
 	isActive bool
@@ -49,14 +50,23 @@ func (m TogglePrompt) Init() tea.Cmd {
 	return nil
 }
 
-//util
-
 func (p TogglePrompt) setIsActive(state bool) Prompt {
 	p.isActive = state
 	return p
 }
 
-func MakeTogglePrompt(message string) TogglePrompt {
+// interface Prompt
+func (m TogglePrompt) GetId() string {
+	return m.id
+}
+
+func (m TogglePrompt) GetSelection() any {
+	// return bool
+	return m.selected
+}
+
+// util
+func MakeTogglePrompt(id string, message string) TogglePrompt {
 	return TogglePrompt{
 		label: message,
 	}

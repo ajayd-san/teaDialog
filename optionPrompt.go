@@ -9,6 +9,7 @@ import (
 )
 
 type OptionPrompt struct {
+	id             string
 	label          string
 	options        []string
 	selectedOption int
@@ -70,20 +71,26 @@ func (m OptionPrompt) Init() tea.Cmd {
 	return nil
 }
 
-//util
-
+// impl interface prompt
 func (p OptionPrompt) setIsActive(state bool) Prompt {
 	p.isActive = state
 	return p
 }
 
-// func (p OptionPrompt) getIsActive() *bool {
-// 	return &p.isActive
-// }
+// GetId implements Prompt.
+func (m OptionPrompt) GetId() string {
+	return m.id
+}
 
-func MakeOptionPrompt(message string, options []string) Prompt {
+// GetSelection implements Prompt.
+func (m OptionPrompt) GetSelection() any {
+	return m.options[m.selectedOption]
+}
+
+// util
+func MakeOptionPrompt(id string, label string, options []string) Prompt {
 	return &OptionPrompt{
-		label:          message,
+		label:          label,
 		options:        options,
 		selectedOption: -1,
 	}
