@@ -49,9 +49,6 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, NavKeymap.Quit):
-			return m, tea.Quit
-
 		case key.Matches(msg, NavKeymap.Next):
 			m.nextPrompt()
 			return m, nil
