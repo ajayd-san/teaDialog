@@ -1,6 +1,7 @@
 package teadialog
 
 import (
+	"log"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -41,6 +42,9 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		for _, prompt := range m.prompts {
 			maxWidth = max(lipgloss.Width(dialogStyle.Render(selectedPromptStyle.Render(prompt.View()))), maxWidth)
 		}
+
+		log.Println(maxWidth)
+		log.Println(lipgloss.Width(dialogStyle.Render(selectedPromptStyle.Render(m.View()))))
 
 		dialogStyle = dialogStyle.Width(maxWidth)
 
