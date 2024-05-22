@@ -44,7 +44,7 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		log.Println(maxWidth)
-		log.Println(dialogStyle.Render(selectedPromptStyle.Render(m.View())))
+		log.Println("\n" + dialogStyle.Render(selectedPromptStyle.Render(m.View())))
 
 		dialogStyle = dialogStyle.Width(maxWidth)
 
