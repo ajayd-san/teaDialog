@@ -1,7 +1,6 @@
 package teadialog
 
 import (
-	"log"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -39,14 +38,17 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			is applied when a active prompt is displayed
 		*/
 		maxWidth := 0
+
+		/*
+			use the default style of `dialogStyle` when deciding the width of the new dialog, otherwise previous prompt dialogstyle is applied
+			when a new prompt is called, otherwise new prompts are wrongly rendered
+		*/
+		tempdialogStyle := lipgloss.NewStyle().Border(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("69")).Align(lipgloss.Center).Padding(2, 8)
 		for _, prompt := range m.prompts {
-			maxWidth = max(lipgloss.Width(dialogStyle.Render(selectedPromptStyle.Render(prompt.View()))), maxWidth)
+			maxWidth = max(lipgloss.Width(tempdialogStyle.Render(selectedPromptStyle.Render(prompt.View()))), maxWidth)
 		}
 
-		log.Println(maxWidth)
-
 		dialogStyle = dialogStyle.Width(maxWidth)
-		log.Println("\n" + dialogStyle.Render(selectedPromptStyle.Render(m.View())))
 
 	case tea.WindowSizeMsg:
 		containerStyle = containerStyle.Width(msg.Width).Height(msg.Height)
