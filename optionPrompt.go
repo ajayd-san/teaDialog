@@ -35,7 +35,11 @@ func (m OptionPrompt) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursorIndex += 1
 			}
 		case key.Matches(msg, promptKeymap.Select):
-			m.selectedOption = m.cursorIndex
+			if m.selectedOption == m.cursorIndex {
+				m.selectedOption = -1
+			} else {
+				m.selectedOption = m.cursorIndex
+			}
 		}
 
 	}

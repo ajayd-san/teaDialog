@@ -22,7 +22,6 @@ func (m TogglePrompt) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, promptKeymap.Select):
 			m.selected = !m.selected
 		}
-
 	}
 	return m, nil
 }
