@@ -5,6 +5,8 @@ import (
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
+
+	"github.com/muesli/reflow/wordwrap"
 )
 
 type ErrorDialog struct {
@@ -41,6 +43,8 @@ func (e ErrorDialog) Init() tea.Cmd {
 }
 
 // util
-func NewErrorDialog(errMsg string) ErrorDialog {
+func NewErrorDialog(errMsg string, width int) ErrorDialog {
+	//30 seems to be a sensible default
+	errMsg = wordwrap.String(errMsg, width-30)
 	return ErrorDialog{message: errMsg}
 }
