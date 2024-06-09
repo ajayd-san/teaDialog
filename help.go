@@ -21,7 +21,7 @@ func (k helpKeys) FullHelp() [][]key.Binding {
 
 var helpKeyMap = helpKeys{
 	Navigation: key.NewBinding(
-		key.WithKeys("h/j/k/l/arrowKeys"),
+		key.WithKeys("h/j/k/l"),
 		key.WithHelp("Arrow Keys/h/j/k/l", "Navigation"),
 	),
 	Back: key.NewBinding(
