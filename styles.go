@@ -18,5 +18,5 @@ var (
 				Padding(2, 8)
 )
 
-const checkMark = "☑"
-const checkBox = "☐"
+const checkMark = "[✔]"
+const checkBox = "[ ]"
