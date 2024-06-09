@@ -3,6 +3,7 @@ package teadialog
 import (
 	"strings"
 
+	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -17,6 +18,7 @@ type Dialog struct {
 	activePrompt int
 	Kind         DialogType
 	storage      map[string]string
+	help         help.Model
 }
 
 type DialogSelectionResult struct {
@@ -52,6 +54,7 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.WindowSizeMsg:
 		containerStyle = containerStyle.Width(msg.Width).Height(msg.Height)
+		m.help.Width = msg.Width
 
 	case tea.KeyMsg:
 		switch {
@@ -91,8 +94,10 @@ func (m Dialog) View() string {
 
 	promptStrsFinal := promptContainerStyle.Render(promptStrs.String())
 	res.WriteString(promptStrsFinal)
+	dialogFinal := dialogStyle.Render(res.String())
+	dialogWithHelp := lipgloss.JoinVertical(lipgloss.Center, dialogFinal, "\n", m.help.View(helpKeyMap))
 
-	return containerStyle.Render(dialogStyle.Render(res.String()))
+	return containerStyle.Render(dialogWithHelp)
 }
 
 func (m Dialog) Init() tea.Cmd {
@@ -109,6 +114,7 @@ func InitDialogue(title string, prompts []Prompt, dialogKind DialogType, storage
 		activePrompt: 0,
 		Kind:         dialogKind,
 		storage:      storage,
+		help:         help.New(),
 	}
 }
 
