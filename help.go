@@ -37,3 +37,22 @@ var helpKeyMap = helpKeys{
 		key.WithHelp("Space", "Select Option"),
 	),
 }
+
+type errorKeys struct {
+	Back key.Binding
+}
+
+var errorKeyMap = errorKeys{
+	Back: key.NewBinding(
+		key.WithKeys("esc"),
+		key.WithHelp("Enter/esc", "Back"),
+	),
+}
+
+func (k errorKeys) ShortHelp() []key.Binding {
+	return []key.Binding{k.Back}
+}
+
+func (k errorKeys) FullHelp() [][]key.Binding {
+	return [][]key.Binding{}
+}

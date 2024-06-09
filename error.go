@@ -3,27 +3,19 @@ package teadialog
 import (
 	"strings"
 
-	"github.com/charmbracelet/bubbles/key"
+	"github.com/charmbracelet/bubbles/help"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 
 	"github.com/muesli/reflow/wordwrap"
 )
 
 type ErrorDialog struct {
 	message string
+	help    help.Model
 }
 
-const ErrorContinue = 0
-
 func (e ErrorDialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch {
-		case key.Matches(msg, NavKeymap.Enter):
-			return nil, func() tea.Msg { return ErrorContinue }
-		}
-
-	}
 	return e, nil
 }
 
@@ -33,8 +25,10 @@ func (e ErrorDialog) View() string {
 
 	res.WriteString("Error:\n\n")
 	res.WriteString(e.message)
+	errDialog := errorDialogStyle.Render(res.String())
+	finalStr := lipgloss.JoinVertical(lipgloss.Top, errDialog, "\n", e.help.View(errorKeyMap))
 
-	return errorDialogStyle.Render(res.String())
+	return finalStr
 
 }
 
@@ -46,5 +40,7 @@ func (e ErrorDialog) Init() tea.Cmd {
 func NewErrorDialog(errMsg string, width int) ErrorDialog {
 	//30 seems to be a sensible default
 	errMsg = wordwrap.String(errMsg, width-30)
-	return ErrorDialog{message: errMsg}
+	help := help.New()
+	help.Width = width
+	return ErrorDialog{message: errMsg, help: help}
 }
