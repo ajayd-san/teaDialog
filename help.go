@@ -56,3 +56,22 @@ func (k errorKeys) ShortHelp() []key.Binding {
 func (k errorKeys) FullHelp() [][]key.Binding {
 	return [][]key.Binding{}
 }
+
+type infoCardKeys struct {
+	Back key.Binding
+}
+
+var infoCardKeymap = infoCardKeys{
+	Back: key.NewBinding(
+		key.WithKeys("esc"),
+		key.WithHelp("Enter/esc", "Back"),
+	),
+}
+
+func (k infoCardKeys) ShortHelp() []key.Binding {
+	return []key.Binding{k.Back}
+}
+
+func (k infoCardKeys) FullHelp() [][]key.Binding {
+	return [][]key.Binding{}
+}
