@@ -33,7 +33,10 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case PromptInit:
 		//set the first prompt to active
-		m.prompts[0] = m.prompts[0].setIsActive(true)
+
+		if len(m.prompts) != 0 {
+			m.prompts[0] = m.prompts[0].setIsActive(true)
+		}
 
 		/*
 			find the maxwidth of each prompt rendered independently, this is ensures the dialog width is constant when left border
@@ -58,10 +61,10 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, NavKeymap.Next):
+		case len(m.prompts) > 0 && key.Matches(msg, NavKeymap.Next):
 			m.nextPrompt()
 			return m, nil
-		case key.Matches(msg, NavKeymap.Prev):
+		case len(m.prompts) > 0 && key.Matches(msg, NavKeymap.Prev):
 			m.prevPrompt()
 			return m, nil
 		case key.Matches(msg, NavKeymap.Enter):
@@ -69,9 +72,11 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
-	updatedPrompt, _ := m.getActivePrompt().Update(msg)
-	temp := updatedPrompt.(Prompt)
-	m.prompts[m.activePrompt] = temp
+	if len(m.prompts) != 0 {
+		updatedPrompt, _ := m.getActivePrompt().Update(msg)
+		temp := updatedPrompt.(Prompt)
+		m.prompts[m.activePrompt] = temp
+	}
 
 	return m, nil
 }
@@ -107,7 +112,7 @@ func (m Dialog) Init() tea.Cmd {
 	}
 }
 
-func InitDialogue(title string, prompts []Prompt, dialogKind DialogType, storage map[string]string) Dialog {
+func InitDialogWithPrompt(title string, prompts []Prompt, dialogKind DialogType, storage map[string]string) Dialog {
 	return Dialog{
 		title:        title,
 		prompts:      prompts,
