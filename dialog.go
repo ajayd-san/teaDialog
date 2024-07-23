@@ -13,6 +13,8 @@ import (
 // type of dialog, can be used to distinguish between different dialogs in main update loop
 type DialogType int
 
+type DialogOption func(*Dialog)
+
 type nextprompt struct{}
 
 type CloseDialog struct{}
@@ -24,6 +26,8 @@ type Dialog struct {
 	Kind         DialogType
 	storage      map[string]string
 	help         help.Model
+	width        int
+	height       int
 }
 
 type DialogSelectionResult struct {
@@ -56,12 +60,20 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			use the default style of `dialogStyle` when deciding the width of the new dialog, otherwise previous prompt dialogstyle is applied
 			when a new prompt is called, otherwise new prompts are wrongly rendered
 		*/
-		tempdialogStyle := lipgloss.NewStyle().Border(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("69")).Align(lipgloss.Center).Padding(2, 8)
-		for _, prompt := range m.prompts {
-			maxWidth = max(lipgloss.Width(tempdialogStyle.Render(selectedPromptStyle.Render(prompt.View()))), maxWidth)
+		if m.width == 0 {
+			tempdialogStyle := lipgloss.NewStyle().Border(lipgloss.NormalBorder()).BorderForeground(lipgloss.Color("69")).Align(lipgloss.Center).Padding(2, 8)
+			for _, prompt := range m.prompts {
+				maxWidth = max(lipgloss.Width(tempdialogStyle.Render(selectedPromptStyle.Render(prompt.View()))), maxWidth)
+			}
+		} else {
+			maxWidth = m.width
 		}
 
 		dialogStyle = dialogStyle.Width(maxWidth)
+
+		if m.height != 0 {
+			dialogStyle = dialogStyle.Height(m.height)
+		}
 
 	case tea.WindowSizeMsg:
 		containerStyle = containerStyle.Width(msg.Width).Height(msg.Height)
@@ -99,7 +111,6 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	if len(m.prompts) != 0 {
-		log.Println(m.getActivePrompt().GetId())
 		updatedPrompt, cmd := m.getActivePrompt().Update(msg)
 		temp := updatedPrompt.(Prompt)
 		m.prompts[m.activePrompt] = temp
@@ -140,14 +151,32 @@ func (m Dialog) Init() tea.Cmd {
 	}
 }
 
-func InitDialogWithPrompt(title string, prompts []Prompt, dialogKind DialogType, storage map[string]string) Dialog {
-	return Dialog{
+func InitDialogWithPrompt(title string, prompts []Prompt, dialogKind DialogType, storage map[string]string, opts ...DialogOption) Dialog {
+	m := Dialog{
 		title:        title,
 		prompts:      prompts,
 		activePrompt: 0,
 		Kind:         dialogKind,
 		storage:      storage,
 		help:         help.New(),
+	}
+
+	for _, opt := range opts {
+		opt(&m)
+	}
+
+	return m
+}
+
+func WithWidth(width int) DialogOption {
+	return func(d *Dialog) {
+		d.width = width
+	}
+}
+
+func WithHeight(height int) DialogOption {
+	return func(d *Dialog) {
+		d.height = height
 	}
 }
 
