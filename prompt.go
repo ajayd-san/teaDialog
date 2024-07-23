@@ -8,7 +8,8 @@ type PromptInit int
 
 type Prompt interface {
 	tea.Model
-	setIsActive(bool) Prompt
+	SetIsActive(bool) Prompt
 	GetId() string
 	GetSelection() any
+	IsFocused() bool
 }

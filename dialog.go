@@ -1,6 +1,7 @@
 package teadialog
 
 import (
+	"log"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -11,6 +12,10 @@ import (
 
 // type of dialog, can be used to distinguish between different dialogs in main update loop
 type DialogType int
+
+type nextprompt struct{}
+
+type CloseDialog struct{}
 
 type Dialog struct {
 	title        string
@@ -29,13 +34,16 @@ type DialogSelectionResult struct {
 
 // Update implements tea.Model.
 func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	cmds := make([]tea.Cmd, 0)
+
 	switch msg := msg.(type) {
 
 	case PromptInit:
 		//set the first prompt to active
 
 		if len(m.prompts) != 0 {
-			m.prompts[0] = m.prompts[0].setIsActive(true)
+			m.prompts[0] = m.prompts[0].SetIsActive(true)
+			cmds = append(cmds, m.prompts[0].Init())
 		}
 
 		/*
@@ -59,26 +67,46 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		containerStyle = containerStyle.Width(msg.Width).Height(msg.Height)
 		m.help.Width = msg.Width
 
+	case nextprompt:
+		if m.activePrompt == len(m.prompts)-1 {
+			log.Println("closing ", m.activePrompt)
+			return m, func() tea.Msg { return CloseDialog{} }
+		}
+
+		m.nextPrompt()
+		cmd := m.getActivePrompt().Init()
+		cmds = append(cmds, cmd)
+
 	case tea.KeyMsg:
 		switch {
-		case len(m.prompts) > 0 && key.Matches(msg, NavKeymap.Next):
+		case len(m.prompts) > 0 && key.Matches(msg, NavKeymap.Next) && !m.getActivePrompt().IsFocused():
 			m.nextPrompt()
+			cmd := m.getActivePrompt().Init()
+			cmds = append(cmds, cmd)
 			return m, nil
-		case len(m.prompts) > 0 && key.Matches(msg, NavKeymap.Prev):
+		case len(m.prompts) > 0 && key.Matches(msg, NavKeymap.Prev) && !m.getActivePrompt().IsFocused():
 			m.prevPrompt()
+			cmd := m.getActivePrompt().Init()
+			cmds = append(cmds, cmd)
 			return m, nil
 		case key.Matches(msg, NavKeymap.Enter):
-			return m, m.getUserChoices()
+			id := m.getActivePrompt().GetId()
+			log.Println("actie prompt ", id)
+			if !m.getActivePrompt().IsFocused() {
+				return m, func() tea.Msg { return CloseDialog{} }
+			}
 		}
 	}
 
 	if len(m.prompts) != 0 {
-		updatedPrompt, _ := m.getActivePrompt().Update(msg)
+		log.Println(m.getActivePrompt().GetId())
+		updatedPrompt, cmd := m.getActivePrompt().Update(msg)
 		temp := updatedPrompt.(Prompt)
 		m.prompts[m.activePrompt] = temp
+		cmds = append(cmds, cmd)
 	}
 
-	return m, nil
+	return m, tea.Batch(cmds...)
 }
 
 func (m Dialog) View() string {
@@ -131,38 +159,36 @@ func (d *Dialog) SetStorage(storage map[string]string) {
 	d.storage = storage
 }
 
-func (d *Dialog) getUserChoices() tea.Cmd {
-	return func() tea.Msg {
-		data := make(map[string]any, len(d.prompts))
-		for _, prompt := range d.prompts {
-			id := prompt.GetId()
-			selection := prompt.GetSelection()
-			data[id] = selection
-		}
+func (d Dialog) GetUserChoices() DialogSelectionResult {
+	data := make(map[string]any, len(d.prompts))
+	for _, prompt := range d.prompts {
+		id := prompt.GetId()
+		selection := prompt.GetSelection()
+		data[id] = selection
+	}
 
-		return DialogSelectionResult{
-			Kind:        d.Kind,
-			UserChoices: data,
-			UserStorage: d.storage,
-		}
+	return DialogSelectionResult{
+		Kind:        d.Kind,
+		UserChoices: data,
+		UserStorage: d.storage,
 	}
 }
 
 // nav
 func (d *Dialog) nextPrompt() {
 	if !(d.activePrompt == len(d.prompts)-1) {
-		d.prompts[d.activePrompt] = d.prompts[d.activePrompt].setIsActive(false)
+		d.prompts[d.activePrompt] = d.prompts[d.activePrompt].SetIsActive(false)
 		d.activePrompt += 1
-		d.prompts[d.activePrompt] = d.prompts[d.activePrompt].setIsActive(true)
+		d.prompts[d.activePrompt] = d.prompts[d.activePrompt].SetIsActive(true)
 	}
 
 }
 
 func (d *Dialog) prevPrompt() {
 	if !(d.activePrompt == 0) {
-		d.prompts[d.activePrompt] = d.prompts[d.activePrompt].setIsActive(false)
+		d.prompts[d.activePrompt] = d.prompts[d.activePrompt].SetIsActive(false)
 		d.activePrompt -= 1
-		d.prompts[d.activePrompt] = d.prompts[d.activePrompt].setIsActive(true)
+		d.prompts[d.activePrompt] = d.prompts[d.activePrompt].SetIsActive(true)
 	}
 }
 
@@ -170,4 +196,8 @@ func (d *Dialog) prevPrompt() {
 
 func (d Dialog) getActivePrompt() Prompt {
 	return d.prompts[d.activePrompt]
+}
+
+func nextPrompt() tea.Msg {
+	return nextprompt{}
 }

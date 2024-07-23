@@ -49,7 +49,7 @@ func (m TogglePrompt) Init() tea.Cmd {
 	return nil
 }
 
-func (p TogglePrompt) setIsActive(state bool) Prompt {
+func (p TogglePrompt) SetIsActive(state bool) Prompt {
 	p.isActive = state
 	return p
 }
@@ -62,6 +62,10 @@ func (m TogglePrompt) GetId() string {
 func (m TogglePrompt) GetSelection() any {
 	// return bool
 	return m.selected
+}
+
+func (m TogglePrompt) IsFocused() bool {
+	return false
 }
 
 // util

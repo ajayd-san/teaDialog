@@ -76,7 +76,7 @@ func (m OptionPrompt) Init() tea.Cmd {
 }
 
 // impl interface prompt
-func (p OptionPrompt) setIsActive(state bool) Prompt {
+func (p OptionPrompt) SetIsActive(state bool) Prompt {
 	p.isActive = state
 	return p
 }
@@ -92,6 +92,10 @@ func (m OptionPrompt) GetSelection() any {
 		return nil
 	}
 	return m.options[m.selectedOption]
+}
+
+func (m OptionPrompt) IsFocused() bool {
+	return false
 }
 
 // util
