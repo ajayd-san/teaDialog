@@ -69,7 +69,7 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			maxWidth = m.width
 		}
 
-		dialogStyle = dialogStyle.Width(maxWidth)
+		promptContainerStyle = promptContainerStyle.Width(maxWidth)
 
 		if m.height != 0 {
 			dialogStyle = dialogStyle.Height(m.height)
