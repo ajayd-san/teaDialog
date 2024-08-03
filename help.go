@@ -44,7 +44,7 @@ type errorKeys struct {
 
 var errorKeyMap = errorKeys{
 	Back: key.NewBinding(
-		key.WithKeys("esc"),
+		key.WithKeys("esc", "enter"),
 		key.WithHelp("Enter/esc", "Back"),
 	),
 }

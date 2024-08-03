@@ -3,6 +3,7 @@ package teadialog
 import "github.com/charmbracelet/bubbles/key"
 
 type navigationKeymap struct {
+	Back  key.Binding
 	Enter key.Binding
 	Quit  key.Binding
 	Next  key.Binding
@@ -31,6 +32,10 @@ var promptKeymap = promptNavKeymap{
 }
 
 var NavKeymap = navigationKeymap{
+	Back: key.NewBinding(
+		key.WithKeys("esc"),
+		key.WithHelp("esc", "Back"),
+	),
 	Enter: key.NewBinding(
 		key.WithKeys("enter"),
 		key.WithHelp("enter", "select"),

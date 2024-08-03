@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
+	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
@@ -16,6 +17,13 @@ type ErrorDialog struct {
 }
 
 func (e ErrorDialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		if key.Matches(msg, errorKeyMap.Back) {
+			return e, func() tea.Msg { return CloseDialog{} }
+		}
+	}
+
 	return e, nil
 }
 
