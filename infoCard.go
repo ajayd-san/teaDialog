@@ -29,9 +29,6 @@ func (m InfoCard) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch {
 		case key.Matches(msg, NavKeymap.Back, NavKeymap.Enter):
 			return m, func() tea.Msg { return CloseDialog{} }
-
-			// case key.Matches(msg, NavKeymap.Enter):
-			// 	return m, nil
 		}
 	}
 

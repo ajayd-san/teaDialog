@@ -106,3 +106,9 @@ func WithDefaultValue(defaults string) TextInputOpt {
 		textinput.defaults = defaults
 	}
 }
+
+func WithTextWidth(width int) TextInputOpt {
+	return func(textinput *TextInput) {
+		textinput.input.Width = width
+	}
+}
