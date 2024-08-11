@@ -79,14 +79,17 @@ func (m TextInput) IsFocused() bool {
 }
 
 func (m TextInput) View() string {
-	label := selectedPromptOptionStyle.Render(m.label)
+	label := m.label
+	if m.IsFocused() {
+		label = selectedPromptOptionStyle.Render(m.label)
+	}
 
 	return promptStyle.Render(
 		fmt.Sprintf(
 			"%s\n\n%s\n\n",
 			label,
 			m.input.View(),
-		) + "\n",
+		),
 	)
 
 }
