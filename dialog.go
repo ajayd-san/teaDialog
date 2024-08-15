@@ -26,6 +26,7 @@ type Dialog struct {
 	Kind         DialogType
 	storage      map[string]string
 	help         help.Model
+	helpKeymap   helpKeys
 	width        int
 	height       int
 }
@@ -102,11 +103,11 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmds = append(cmds, cmd)
 			return m, nil
 		case key.Matches(msg, NavKeymap.Enter):
-			id := m.getActivePrompt().GetId()
-			log.Println("actie prompt ", id)
 			if !m.getActivePrompt().IsFocused() {
 				return m, func() tea.Msg { return CloseDialog{} }
 			}
+		case key.Matches(msg, NavKeymap.SkipAndSubmit):
+			return m, func() tea.Msg { return CloseDialog{} }
 		}
 	}
 
@@ -139,7 +140,7 @@ func (m Dialog) View() string {
 	promptStrsFinal := promptContainerStyle.Render(promptStrs.String())
 	res.WriteString(promptStrsFinal)
 	dialogFinal := dialogStyle.Render(res.String())
-	dialogWithHelp := lipgloss.JoinVertical(lipgloss.Center, dialogFinal, "\n", m.help.View(helpKeyMap))
+	dialogWithHelp := lipgloss.JoinVertical(lipgloss.Center, dialogFinal, "\n", m.help.View(m.helpKeymap))
 
 	return containerStyle.Render(dialogWithHelp)
 }
@@ -159,6 +160,7 @@ func InitDialogWithPrompt(title string, prompts []Prompt, dialogKind DialogType,
 		Kind:         dialogKind,
 		storage:      storage,
 		help:         help.New(),
+		helpKeymap:   helpKeyMap,
 	}
 
 	for _, opt := range opts {
@@ -168,6 +170,11 @@ func InitDialogWithPrompt(title string, prompts []Prompt, dialogKind DialogType,
 	return m
 }
 
+func WithShowFullHelp(show bool) DialogOption {
+	return func(d *Dialog) {
+		d.helpKeymap.showFull = show
+	}
+}
 func WithWidth(width int) DialogOption {
 	return func(d *Dialog) {
 		d.width = width

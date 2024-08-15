@@ -3,11 +3,12 @@ package teadialog
 import "github.com/charmbracelet/bubbles/key"
 
 type navigationKeymap struct {
-	Back  key.Binding
-	Enter key.Binding
-	Quit  key.Binding
-	Next  key.Binding
-	Prev  key.Binding
+	Back          key.Binding
+	Enter         key.Binding
+	Quit          key.Binding
+	Next          key.Binding
+	Prev          key.Binding
+	SkipAndSubmit key.Binding
 }
 
 type promptNavKeymap struct {
@@ -51,5 +52,9 @@ var NavKeymap = navigationKeymap{
 	Prev: key.NewBinding(
 		key.WithKeys("up", "k"),
 		key.WithHelp("<-/k", "prev prompt"),
+	),
+	SkipAndSubmit: key.NewBinding(
+		key.WithKeys("ctrl+a"),
+		key.WithHelp("C-a", "Skip and submit"),
 	),
 }
