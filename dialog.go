@@ -125,6 +125,15 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
+	if m.hijacked {
+		tempm, cmd := m.hijacker.Update(msg)
+		cmds = append(cmds, cmd)
+		if h, ok := tempm.(Hijacker); ok {
+			m.hijacker = h
+			log.Println(h, m.getActivePrompt())
+		}
+	}
+
 	if len(m.prompts) != 0 {
 		updatedPrompt, cmd := m.getActivePrompt().Update(msg)
 		temp := updatedPrompt.(Prompt)

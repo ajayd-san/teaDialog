@@ -82,11 +82,6 @@ func Default_list() model {
 	del := list.NewDefaultDelegate()
 	del.ShowDescription = false
 
-	del.Styles.NormalTitle = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).Padding(0)
-	del.Styles.SelectedTitle = lipgloss.NewStyle().
-		Border(lipgloss.NormalBorder(), false, false, false, true).
-		BorderForeground(lipgloss.AdaptiveColor{Light: "#F793FF", Dark: "#AD58B4"}).
-		Foreground(lipgloss.AdaptiveColor{Light: "#EE6FF8", Dark: "#EE6FF8"})
 	m := model{list: list.New(items, del, 40, 15)}
 	m.list.SetShowHelp(false)
 	m.list.SetShowTitle(false)
