@@ -19,9 +19,14 @@ type nextprompt struct{}
 
 type CloseDialog struct{}
 
+type HijackMsg struct{}
+
 type Dialog struct {
-	title        string
-	prompts      []Prompt
+	title   string
+	prompts []Prompt
+	// used to indicate if a nested dialog is in use, so that we can use full space
+	hijacked     bool
+	hijacker     Hijacker
 	activePrompt int
 	Kind         DialogType
 	storage      map[string]string
@@ -90,24 +95,33 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmd := m.getActivePrompt().Init()
 		cmds = append(cmds, cmd)
 
+	case HijackMsg:
+		if hijacker, ok := m.prompts[m.activePrompt].(Hijacker); ok {
+			m.hijacked = true
+			m.hijacker = hijacker
+		}
+
 	case tea.KeyMsg:
-		switch {
-		case len(m.prompts) > 0 && key.Matches(msg, NavKeymap.Next) && !m.getActivePrompt().IsFocused():
-			m.nextPrompt()
-			cmd := m.getActivePrompt().Init()
-			cmds = append(cmds, cmd)
-			return m, nil
-		case len(m.prompts) > 0 && key.Matches(msg, NavKeymap.Prev) && !m.getActivePrompt().IsFocused():
-			m.prevPrompt()
-			cmd := m.getActivePrompt().Init()
-			cmds = append(cmds, cmd)
-			return m, nil
-		case key.Matches(msg, NavKeymap.Enter):
-			if !m.getActivePrompt().IsFocused() {
+
+		if !m.hijacked {
+			switch {
+			case len(m.prompts) > 0 && key.Matches(msg, NavKeymap.Next) && !m.getActivePrompt().IsFocused():
+				m.nextPrompt()
+				cmd := m.getActivePrompt().Init()
+				cmds = append(cmds, cmd)
+				return m, nil
+			case len(m.prompts) > 0 && key.Matches(msg, NavKeymap.Prev) && !m.getActivePrompt().IsFocused():
+				m.prevPrompt()
+				cmd := m.getActivePrompt().Init()
+				cmds = append(cmds, cmd)
+				return m, nil
+			case key.Matches(msg, NavKeymap.Enter):
+				if !m.getActivePrompt().IsFocused() {
+					return m, func() tea.Msg { return CloseDialog{} }
+				}
+			case key.Matches(msg, NavKeymap.SkipAndSubmit):
 				return m, func() tea.Msg { return CloseDialog{} }
 			}
-		case key.Matches(msg, NavKeymap.SkipAndSubmit):
-			return m, func() tea.Msg { return CloseDialog{} }
 		}
 	}
 
@@ -128,21 +142,28 @@ func (m Dialog) View() string {
 
 	res.WriteString(m.title + "\n\n")
 
-	for i, prompt := range m.prompts {
-		promptStr := prompt.View()
-		if i == m.activePrompt {
-			promptStr = selectedPromptStyle.Render(promptStr)
+	if m.hijacked {
+		v := m.hijacker.View()
+		log.Println(v)
+		res.WriteString(v)
+	} else {
+		for i, prompt := range m.prompts {
+			promptStr := prompt.View()
+			if i == m.activePrompt {
+				promptStr = selectedPromptStyle.Render(promptStr)
+			}
+			promptStrs.WriteString(promptStr)
+			promptStrs.WriteString("\n")
 		}
-		promptStrs.WriteString(promptStr)
-		promptStrs.WriteString("\n")
+
+		promptStrsFinal := promptContainerStyle.Render(promptStrs.String())
+		res.WriteString(promptStrsFinal)
 	}
 
-	promptStrsFinal := promptContainerStyle.Render(promptStrs.String())
-	res.WriteString(promptStrsFinal)
 	dialogFinal := dialogStyle.Render(res.String())
 	dialogWithHelp := lipgloss.JoinVertical(lipgloss.Center, dialogFinal, "\n", m.help.View(m.helpKeymap))
 
-	return containerStyle.Render(dialogWithHelp)
+	return dialogWithHelp
 }
 
 func (m Dialog) Init() tea.Cmd {

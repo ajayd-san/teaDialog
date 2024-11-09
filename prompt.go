@@ -13,3 +13,7 @@ type Prompt interface {
 	GetSelection() any
 	IsFocused() bool
 }
+
+type Hijacker interface {
+	Prompt
+}
