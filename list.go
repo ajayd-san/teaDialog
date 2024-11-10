@@ -9,61 +9,72 @@ import (
 
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
 
-type item struct {
-	title, desc string
+var buttonStyle = lipgloss.NewStyle().
+	Foreground(lipgloss.Color("#FFF7DB")).
+	Background(lipgloss.Color("#888B7E")).
+	Padding(0, 3).
+	Margin(1, 0)
+
+var activeButtonStyle = buttonStyle.
+	Foreground(lipgloss.Color("#FFF7DB")).
+	Background(lipgloss.Color("#F25D94")).
+	Margin(1, 1, 1, 0)
+
+type PopupListItem struct {
+	Name, Desc string
 }
 
-func (i item) Title() string       { return i.title }
-func (i item) Description() string { return i.desc }
-func (i item) FilterValue() string { return i.title }
+func (i PopupListItem) Title() string       { return i.Name }
+func (i PopupListItem) Description() string { return i.Desc }
+func (i PopupListItem) FilterValue() string { return i.Name }
 
-type model struct {
+type PopupList struct {
 	id            string
 	list          list.Model
+	buttonMsg     string
 	isActive      bool
-	selection     *item
+	selection     *PopupListItem
 	isHijacker    bool
 	isListFocused bool
 }
 
-func (m *model) Hijack() {
+func (m *PopupList) Hijack() {
 	m.isHijacker = true
 }
 
-func (m *model) UnHijack() {
+func (m *PopupList) UnHijack() {
 	m.isHijacker = false
 }
 
-func (m *model) SetIsActive(state bool) Prompt {
+func (m *PopupList) SetIsActive(state bool) Prompt {
 	m.isActive = state
 	return m
 }
 
-func (m *model) GetId() string {
+func (m *PopupList) GetId() string {
 	return m.id
 }
 
-func (m *model) GetSelection() any {
-	return m.selection.title
+func (m *PopupList) GetSelection() any {
+	return m.selection.Name
 }
 
-// TODO: WRITE CORRECT LOGIC
-func (m *model) IsFocused() bool {
+func (m *PopupList) IsFocused() bool {
 	return m.isListFocused
 }
 
-func (m *model) Init() tea.Cmd {
+func (m *PopupList) Init() tea.Cmd {
 	return nil
 }
 
-func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *PopupList) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, promptKeymap.Select):
 			// if list is already hijacking the dialog then pressing space will select the item
 			if m.isHijacker {
-				if selected, ok := m.list.SelectedItem().(item); ok {
+				if selected, ok := m.list.SelectedItem().(PopupListItem); ok {
 					m.selection = &selected
 					m.isListFocused = false
 					return m, func() tea.Msg { return takeControlBackMsg{} }
@@ -76,11 +87,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, NavKeymap.Back) && m.isListFocused:
 			m.isListFocused = false
 			m.selection = nil
-
+			return m, func() tea.Msg { return takeControlBackMsg{} }
 		}
-		// case tea.WindowSizeMsg:
-		// h, v := docStyle.GetFrameSize()
-		// m.list.SetSize(msg.Width-h, msg.Height-v)
 	}
 
 	var cmd tea.Cmd
@@ -89,30 +97,31 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m *model) View() string {
+func (m *PopupList) View() string {
 	if m.isListFocused {
 		return m.list.View()
 	}
+
 	if !m.isHijacker && m.selection != nil {
-		return m.selection.title
+		return "Selected: " + selectedPromptOptionStyle.Render(m.selection.Name)
 	} else if !m.isHijacker {
-		return "select"
+		if m.isActive {
+			return activeButtonStyle.Render(m.buttonMsg)
+		}
+		return buttonStyle.Render(m.buttonMsg)
 	}
 
 	return ""
 }
 
-func Default_list() model {
-	items := []list.Item{
-		item{title: "Raspberry Pi’s", desc: "I have ’em all over my house"},
-		item{title: "Nutella", desc: "It's good on toast"},
-		item{title: "idk", desc: "It's good on toast"},
-	}
-
+func Default_list(items []list.Item, button_msg string, width, height int) PopupList {
 	del := list.NewDefaultDelegate()
 	del.ShowDescription = false
 
-	m := model{list: list.New(items, del, 40, 15)}
+	m := PopupList{
+		list:      list.New(items, del, 40, 15),
+		buttonMsg: "Select Pod",
+	}
 	m.list.SetShowHelp(false)
 	m.list.SetShowTitle(false)
 	m.list.DisableQuitKeybindings()
