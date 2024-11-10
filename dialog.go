@@ -1,7 +1,6 @@
 package teadialog
 
 import (
-	"log"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -20,6 +19,8 @@ type nextprompt struct{}
 type CloseDialog struct{}
 
 type HijackMsg struct{}
+
+type takeControlBackMsg struct{}
 
 type Dialog struct {
 	title   string
@@ -87,7 +88,6 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case nextprompt:
 		if m.activePrompt == len(m.prompts)-1 {
-			log.Println("closing ", m.activePrompt)
 			return m, func() tea.Msg { return CloseDialog{} }
 		}
 
@@ -99,7 +99,12 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if hijacker, ok := m.prompts[m.activePrompt].(Hijacker); ok {
 			m.hijacked = true
 			m.hijacker = hijacker
+			m.hijacker.Hijack()
 		}
+	case takeControlBackMsg:
+		m.hijacked = false
+		m.hijacker.UnHijack()
+		m.hijacker = nil
 
 	case tea.KeyMsg:
 
@@ -130,15 +135,14 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmds = append(cmds, cmd)
 		if h, ok := tempm.(Hijacker); ok {
 			m.hijacker = h
-			log.Println(h, m.getActivePrompt())
 		}
-	}
-
-	if len(m.prompts) != 0 {
-		updatedPrompt, cmd := m.getActivePrompt().Update(msg)
-		temp := updatedPrompt.(Prompt)
-		m.prompts[m.activePrompt] = temp
-		cmds = append(cmds, cmd)
+	} else {
+		if len(m.prompts) != 0 {
+			updatedPrompt, cmd := m.getActivePrompt().Update(msg)
+			temp := updatedPrompt.(Prompt)
+			m.prompts[m.activePrompt] = temp
+			cmds = append(cmds, cmd)
+		}
 	}
 
 	return m, tea.Batch(cmds...)
@@ -153,7 +157,6 @@ func (m Dialog) View() string {
 
 	if m.hijacked {
 		v := m.hijacker.View()
-		log.Println(v)
 		res.WriteString(v)
 	} else {
 		for i, prompt := range m.prompts {
@@ -172,7 +175,7 @@ func (m Dialog) View() string {
 	dialogFinal := dialogStyle.Render(res.String())
 	dialogWithHelp := lipgloss.JoinVertical(lipgloss.Center, dialogFinal, "\n", m.help.View(m.helpKeymap))
 
-	return dialogWithHelp
+	return containerStyle.Render(dialogWithHelp)
 }
 
 func (m Dialog) Init() tea.Cmd {

@@ -16,4 +16,6 @@ type Prompt interface {
 
 type Hijacker interface {
 	Prompt
+	Hijack()
+	UnHijack()
 }
