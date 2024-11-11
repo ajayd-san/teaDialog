@@ -114,12 +114,18 @@ func (m *PopupList) View() string {
 	return ""
 }
 
-func Default_list(items []list.Item, button_msg string, width, height int) PopupList {
+func Default_list(items []string, button_msg string, width, height int) PopupList {
 	del := list.NewDefaultDelegate()
 	del.ShowDescription = false
 
+	finalList := make([]list.Item, 0, len(items))
+
+	for _, item := range items {
+		finalList = append(finalList, PopupListItem{item, ""})
+	}
+
 	m := PopupList{
-		list:      list.New(items, del, 40, 15),
+		list:      list.New(finalList, del, 40, 15),
 		buttonMsg: "Select Pod",
 	}
 	m.list.SetShowHelp(false)
