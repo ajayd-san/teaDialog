@@ -21,11 +21,12 @@ var activeButtonStyle = buttonStyle.
 	Margin(1, 1, 1, 0)
 
 type PopupListItem struct {
-	Name, Desc string
+	Name           string
+	AdditionalData any
 }
 
 func (i PopupListItem) Title() string       { return i.Name }
-func (i PopupListItem) Description() string { return i.Desc }
+func (i PopupListItem) Description() string { return "" }
 func (i PopupListItem) FilterValue() string { return i.Name }
 
 type PopupList struct {
@@ -56,7 +57,7 @@ func (m *PopupList) GetId() string {
 }
 
 func (m *PopupList) GetSelection() any {
-	return m.selection.Name
+	return *m.selection
 }
 
 func (m *PopupList) IsFocused() bool {
@@ -103,7 +104,7 @@ func (m *PopupList) View() string {
 	}
 
 	if !m.isHijacker && m.selection != nil {
-		return "Selected: " + selectedPromptOptionStyle.Render(m.selection.Name)
+		return "Selected: " + selectedPromptOptionStyle.Render(m.selection.Name) + "\n"
 	} else if !m.isHijacker {
 		if m.isActive {
 			return activeButtonStyle.Render(m.buttonMsg)
@@ -114,18 +115,19 @@ func (m *PopupList) View() string {
 	return ""
 }
 
-func Default_list(items []string, button_msg string, width, height int) PopupList {
+func Default_list(id string, items []PopupListItem, button_msg string, width, height int) PopupList {
 	del := list.NewDefaultDelegate()
 	del.ShowDescription = false
 
 	finalList := make([]list.Item, 0, len(items))
 
 	for _, item := range items {
-		finalList = append(finalList, PopupListItem{item, ""})
+		finalList = append(finalList, item)
 	}
 
 	m := PopupList{
-		list:      list.New(finalList, del, 40, 15),
+		id:        id,
+		list:      list.New(finalList, del, width, height),
 		buttonMsg: "Select Pod",
 	}
 	m.list.SetShowHelp(false)
