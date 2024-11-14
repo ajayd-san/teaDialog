@@ -1,6 +1,9 @@
 package teadialog
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -31,6 +34,7 @@ func (i PopupListItem) FilterValue() string { return i.Name }
 
 type PopupList struct {
 	id            string
+	title         string
 	list          list.Model
 	buttonMsg     string
 	isActive      bool
@@ -57,7 +61,7 @@ func (m *PopupList) GetId() string {
 }
 
 func (m *PopupList) GetSelection() any {
-	return *m.selection
+	return m.selection
 }
 
 func (m *PopupList) IsFocused() bool {
@@ -100,11 +104,14 @@ func (m *PopupList) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *PopupList) View() string {
 	if m.isListFocused {
-		return m.list.View()
+		var res strings.Builder
+		res.WriteString(fmt.Sprintf("Select %s: \n", m.title))
+		res.WriteString(m.list.View())
+		return res.String()
 	}
 
 	if !m.isHijacker && m.selection != nil {
-		return "Selected: " + selectedPromptOptionStyle.Render(m.selection.Name) + "\n"
+		return fmt.Sprintf("Selected %s: %s\n", m.title, selectedPromptOptionStyle.Render(m.selection.Name))
 	} else if !m.isHijacker {
 		if m.isActive {
 			return activeButtonStyle.Render(m.buttonMsg)
@@ -115,7 +122,7 @@ func (m *PopupList) View() string {
 	return ""
 }
 
-func Default_list(id string, items []PopupListItem, button_msg string, width, height int) PopupList {
+func Default_list(id string, title string, items []PopupListItem, button_msg string, width, height int) PopupList {
 	del := list.NewDefaultDelegate()
 	del.ShowDescription = false
 
@@ -127,6 +134,7 @@ func Default_list(id string, items []PopupListItem, button_msg string, width, he
 
 	m := PopupList{
 		id:        id,
+		title:     title,
 		list:      list.New(finalList, del, width, height),
 		buttonMsg: "Select Pod",
 	}

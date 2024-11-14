@@ -18,6 +18,8 @@ type nextprompt struct{}
 
 type CloseDialog struct{}
 
+type QuitDialog struct{}
+
 type HijackMsg struct{}
 
 type takeControlBackMsg struct{}
@@ -126,6 +128,8 @@ func (m Dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			case key.Matches(msg, NavKeymap.SkipAndSubmit):
 				return m, func() tea.Msg { return CloseDialog{} }
+			case key.Matches(msg, NavKeymap.Back):
+				return m, func() tea.Msg { return QuitDialog{} }
 			}
 		}
 	}
@@ -153,12 +157,11 @@ func (m Dialog) View() string {
 	var res strings.Builder
 	var promptStrs strings.Builder
 
-	res.WriteString(m.title + "\n\n")
-
 	if m.hijacked {
 		v := m.hijacker.View()
 		res.WriteString(v)
 	} else {
+		res.WriteString(m.title + "\n\n")
 		for i, prompt := range m.prompts {
 			promptStr := prompt.View()
 			if i == m.activePrompt {
