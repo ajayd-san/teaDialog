@@ -156,11 +156,14 @@ func (m Dialog) View() string {
 
 	var res strings.Builder
 	var promptStrs strings.Builder
+	var helpkeymap helpKeys
 
 	if m.hijacked {
 		v := m.hijacker.View()
+		helpkeymap = m.hijacker.Help()
 		res.WriteString(v)
 	} else {
+		helpkeymap = m.helpKeymap
 		res.WriteString(m.title + "\n\n")
 		for i, prompt := range m.prompts {
 			promptStr := prompt.View()
@@ -176,7 +179,7 @@ func (m Dialog) View() string {
 	}
 
 	dialogFinal := dialogStyle.Render(res.String())
-	dialogWithHelp := lipgloss.JoinVertical(lipgloss.Center, dialogFinal, "\n", m.help.View(m.helpKeymap))
+	dialogWithHelp := lipgloss.JoinVertical(lipgloss.Center, dialogFinal, "\n", m.help.View(helpkeymap))
 
 	return containerStyle.Render(dialogWithHelp)
 }
@@ -196,7 +199,7 @@ func InitDialogWithPrompt(title string, prompts []Prompt, dialogKind DialogType,
 		Kind:         dialogKind,
 		storage:      storage,
 		help:         help.New(),
-		helpKeymap:   helpKeyMap,
+		helpKeymap:   default_Help(),
 	}
 
 	for _, opt := range opts {

@@ -25,28 +25,54 @@ func (k helpKeys) FullHelp() [][]key.Binding {
 	return [][]key.Binding{}
 }
 
-var helpKeyMap = helpKeys{
-	showFull: false,
-	Navigation: key.NewBinding(
-		key.WithKeys("h/j/k/l"),
-		key.WithHelp("Arrow Keys/h/j/k/l", "Navigation"),
-	),
-	Back: key.NewBinding(
-		key.WithKeys("esc"),
-		key.WithHelp("esc", "Back"),
-	),
-	Submit: key.NewBinding(
-		key.WithKeys("Enter"),
-		key.WithHelp("Enter", "Submit"),
-	),
-	SkipAndSubmit: key.NewBinding(
-		key.WithKeys("ctrl+a"),
-		key.WithHelp("C-a", "Skip and submit"),
-	),
-	Select: key.NewBinding(
-		key.WithKeys(" "),
-		key.WithHelp("Space", "Select Option"),
-	),
+// var helpKeyMap = helpKeys{
+// 	showFull: false,
+// 	Navigation: key.NewBinding(
+// 		key.WithKeys("h/j/k/l"),
+// 		key.WithHelp("Arrow Keys/h/j/k/l", "Navigation"),
+// 	),
+// 	Back: key.NewBinding(
+// 		key.WithKeys("esc"),
+// 		key.WithHelp("esc", "Back"),
+// 	),
+// 	Submit: key.NewBinding(
+// 		key.WithKeys("Enter"),
+// 		key.WithHelp("Enter", "Submit"),
+// 	),
+// 	SkipAndSubmit: key.NewBinding(
+// 		key.WithKeys("ctrl+a"),
+// 		key.WithHelp("C-a", "Skip and submit"),
+// 	),
+// 	Select: key.NewBinding(
+// 		key.WithKeys(" "),
+// 		key.WithHelp("Space", "Select Option"),
+// 	),
+// }
+
+func default_Help() helpKeys {
+	return helpKeys{
+		showFull: false,
+		Navigation: key.NewBinding(
+			key.WithKeys("h/j/k/l"),
+			key.WithHelp("Arrow Keys/h/j/k/l", "Navigation"),
+		),
+		Back: key.NewBinding(
+			key.WithKeys("esc"),
+			key.WithHelp("esc", "Back"),
+		),
+		Submit: key.NewBinding(
+			key.WithKeys("Enter"),
+			key.WithHelp("Enter", "Submit"),
+		),
+		SkipAndSubmit: key.NewBinding(
+			key.WithKeys("ctrl+a"),
+			key.WithHelp("C-a", "Skip and submit"),
+		),
+		Select: key.NewBinding(
+			key.WithKeys(" "),
+			key.WithHelp("Space", "Select Option"),
+		),
+	}
 }
 
 type errorKeys struct {

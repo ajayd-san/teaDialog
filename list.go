@@ -41,6 +41,7 @@ type PopupList struct {
 	selection     *PopupListItem
 	isHijacker    bool
 	isListFocused bool
+	help          helpKeys
 }
 
 func (m *PopupList) Hijack() {
@@ -49,6 +50,10 @@ func (m *PopupList) Hijack() {
 
 func (m *PopupList) UnHijack() {
 	m.isHijacker = false
+}
+
+func (m *PopupList) Help() helpKeys {
+	return m.help
 }
 
 func (m *PopupList) SetIsActive(state bool) Prompt {
@@ -107,6 +112,7 @@ func (m *PopupList) View() string {
 		var res strings.Builder
 		res.WriteString(fmt.Sprintf("Select %s: \n", m.title))
 		res.WriteString(m.list.View())
+
 		return res.String()
 	}
 
@@ -132,11 +138,16 @@ func Default_list(id string, title string, items []PopupListItem, button_msg str
 		finalList = append(finalList, item)
 	}
 
+	help := default_Help()
+	help.Submit.Unbind()
+	help.SkipAndSubmit.Unbind()
+
 	m := PopupList{
 		id:        id,
 		title:     title,
 		list:      list.New(finalList, del, width, height),
 		buttonMsg: "Select Pod",
+		help:      help,
 	}
 	m.list.SetShowHelp(false)
 	m.list.SetShowTitle(false)

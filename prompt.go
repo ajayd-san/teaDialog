@@ -18,4 +18,6 @@ type Hijacker interface {
 	Prompt
 	Hijack()
 	UnHijack()
+	// custom help
+	Help() helpKeys
 }
